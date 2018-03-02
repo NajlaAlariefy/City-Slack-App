@@ -1,57 +1,170 @@
-import React, { Component } from 'react';
+import React, {
+  Component
+} from 'react';
 import fire from './fire';
-import buildings from './data/buildings.json';
+//import buildings from './data/buildings.json';
 import background from './resources/bg.jpg'
 import city from './data/city.json'
-import ReactHover from './ReactHover'
-import HoverComponent from './info' 
-import TriggerComponent from './building'
 import componentstyles from './component.css'
+import 'react-tippy/dist/tippy.css'
+import {
+  Tooltip,
+} from 'react-tippy';
+import _ from 'lodash';
+import firebase from './fire.js'
+
+
 
 class App extends Component {
- 
-   render() {
-    
-        
-    return (
-      <div style={divStyle}>  
-        <table style={tableStyle}>
-      <tbody><tr>
-        {buildings.map(function(item, key) {
-             
-               return (
-                
-  
-                  <td  key = {key}>{item.project} <img  style={imgS} src={require('./resources/b2.png')}/></td>
-                
-                 
-        
-                )
-             
-             })}  
-              <td>   <ReactHover
-              options={optionsCursorTrueWithMargin}>
-              <ReactHover.Trigger type='trigger'>
-                <img style={imgS}  src={require('./resources/hq.png')}/>
-              </ReactHover.Trigger>
-              <ReactHover.Hover type='hover'>
-                <div className={componentstyles.hover}>
-                  <img className={componentstyles.thumbnail} alt="Albert Einstein" src="https://images.gr-assets.com/authors/1429114964p2/9810.jpg" />
-                  <blockquote className={componentstyles.quote}> Two things are infinite: the universe and human stupidity; and I'm not sure about the universe. </blockquote>
-                  <p className={componentstyles.people}>--Albert Einstein</p>
-                </div>
-              </ReactHover.Hover>
-            </ReactHover></td></tr>
-                                               </tbody>
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      buildings: []
+    };
+    let app = firebase.database().ref('buildings');
+    app.on('value', snapshot => {
+      this.getData(snapshot.val());
+
+    });
+
+  }
+  getData(values) {
+    let buildValues = values;
+    let buildings = _(buildValues)
+      .keys()
+      .map(bKey => {
+        let cloned = _.clone(buildValues[bKey]);
+        cloned.key = bKey;
+        return cloned;
+      })
+      .value();
+
+    this.setState({
+      buildings: buildings
+    });
+
+  }
+
+  render() {
 
 
-    
-       </table>   </div>
+    return ( <
+      div > < div style = {
+        divStyle
+      } >
+
+      <
+      table style = {
+        tableStyle
+      } >
+      <
+      tbody > < tr > {
+        this.state.buildings.map(function(item, key)   {
+          return ( <
+            td key = {
+              key
+            } >
+            <
+            Tooltip html = {
+              ( <
+                div >
+                <
+                strong > {
+                   item.project
+                } <
+                /strong><br/ >
+                Contractor—  < strong > {
+                   item.contractor
+                } < /strong> <br/ >
+                Landlord—  < strong > {
+                   item.landlord
+                } < /strong><br/ >
+                Phase—  < strong > {
+                  item.phase
+                } < /strong><br/ >
+                <
+                /div>
+              )
+            }
+            position = "top"
+            trigger = "click" >
+            <
+            p >
+            <
+            img style = {
+              imgS
+            }
+            src = {
+              require('./resources/b1.png')
+            }
+            /> <
+            /p> <
+            /Tooltip> <
+            /td>
+
+
+
+          )
+
+        })
+      }
+
+
+      <
+      td >
+      <
+      Tooltip html = {
+        ( <
+          div >
+          Mayor— < strong > The MAYOR < /strong><br/ >
+          Population—  < strong > {
+            city.Population
+          } < /strong> <br/ >
+          GDP—  < strong > {
+            city.GDP
+          } < /strong><br/ >
+
+          <
+          /div>
+        )
+      }
+      position = "top"
+      trigger = "click" >
+      <
+      img style = {
+        imgS
+      }
+      src = {
+        require('./resources/hq.png')
+      }
+      /> <
+      /Tooltip> <
+      /td></tr >
+
+      <
+      /tbody>
+
+
+
+      <
+      /table>   </div >
+      <
+      div style = {
+        How
+      } >
+      WATCH YOU CITY GROW
+
+      The more you interact with the city, the <
+      /div>
+
+      <
+      /div>
     )
   }
-  
-  
-  
+
+
+
 }
 const optionsCursorTrueWithMargin = {
   followCursor: true,
@@ -59,17 +172,29 @@ const optionsCursorTrueWithMargin = {
   shiftY: 0
 }
 var divStyle = {
-  height: 800,
-  backgroundImage:`url(${background})`,
-    
-};
+  height: 900,
+  backgroundImage: `url(${background})`,
 
+};
+var How = {
+  height: 900,
+  backgroundColor: '#eee',
+
+};
+var tes = {
+
+  backgroundColor: 'red',
+
+};
 var tableStyle = {
-    position: 'absolute',
-    bottom:'0px'
-    
+  position: 'absolute',
+  bottom: '250px'
+
 }
 var imgS = {
-    width: 50
+  width: 150
 }
+
+
+
 export default App;
